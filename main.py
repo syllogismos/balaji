@@ -11,7 +11,7 @@ FOLLOWER_DIR = "MY_FOLLOWERS.pkl"
 def update_followers_db(api):
   followers = []
   try:
-    for follower in tqdm(tweepy.Cursor(api.followers).items()):
+    for follower in tqdm(get_limit_handled(tweepy.Cursor(api.followers).items())):
       followers.append(follower)
   except:
     print("Exception while traversing through followers cursor")
@@ -37,21 +37,14 @@ def get_top_followers(followers, limit=10, criterion=None):
   followers.sort(key=lambda x: x._json['followers_count'], reverse=True)
   return followers[:limit]
 
+# Get followers rate limit cursor
+def get_limit_handled(cursor):
+  while True:
+    try:
+      yield cursor.next()
+    except tweepy.RateLimitError:
+      time.sleep(15*60)
 
-# Rate limiting example with custom cursor
-# # In this example, the handler is time.sleep(15 * 60),
-# # but you can of course handle it in any way you want.
-
-# def limit_handled(cursor):
-#     while True:
-#         try:
-#             yield cursor.next()
-#         except tweepy.RateLimitError:
-#             time.sleep(15 * 60)
-
-# for follower in limit_handled(tweepy.Cursor(api.followers).items()):
-#     if follower.friends_count < 300:
-#         print(follower.screen_name)
 
 def send_dm(followers, message):
   for follower in tqdm(followers):
