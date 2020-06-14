@@ -1,12 +1,21 @@
 import tweepy
 from tqdm import tqdm
 import pickle, time
-from config import create_api
+from config import create_api, FOLLOWER_PKL
+from utils import get_followers_local
 
 import argparse
 
+# TODO Partial db update, and handle full db update
+# TODO figure out filters mechanism
+# TODO last_seen filter, obviously not reliable if you cant/dont update the db regularly
+# TODO country filter
+# TODO clustering followers
+# TODO get most relevant followers
+# TODO send at a particular time based on timezone, time 1-24
+# TODO checks to make sure u dont send a dm to the same person in a day thru this
 
-FOLLOWER_DIR = "MY_FOLLOWERS.pkl"
+
 
 def update_followers_db(api):
   followers = []
@@ -19,12 +28,12 @@ def update_followers_db(api):
 
   print('No of followers downloaded', len(followers))    
   print('updating local followers db')
-  pickle.dump(followers, open(FOLLOWER_DIR, 'wb'))
+  pickle.dump(followers, open(FOLLOWER_PKL, 'wb'))
   return followers
 
 def get_followers_local():
   try:
-    followers = pickle.load(open(FOLLOWER_DIR, 'rb'))
+    followers = pickle.load(open(FOLLOWER_PKL, 'rb'))
   except:
     print("local db doesn't exist or is corrupted\nupdating the local follower data")
     followers = update_followers_db(api)

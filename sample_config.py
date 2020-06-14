@@ -1,5 +1,8 @@
 import tweepy
 
+FOLLOWER_PKL = "MY_FOLLOWERS.pkl"
+BASE_CSV = "FOLLOWERS.csv"
+
 def create_api():
   # consumer_key, consumer_secret
   auth = tweepy.OAuthHandler('CONSUMER_KEY', 'CONSUMER_SECRET')
