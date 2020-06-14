@@ -14,3 +14,4 @@ pip install tqdm, tweepy
 python main.py -h # for help
 python main.py 100 # 100 is the number of users you send tweet to
 python main.py 100 --forreals # you need this flag to send the DM's for reals
+python main.py 100 --update # to update your local db of followers
