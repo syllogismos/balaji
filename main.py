@@ -8,11 +8,6 @@ import argparse
 
 follower_directory = "MY_FOLLOWERS.pkl"
 
-
-
-
-
-
 def update_followers_db(api):
   followers = []
   try:
@@ -55,7 +50,7 @@ def send_dm(followers, message):
   for follower in tqdm(followers):
     try:
       api.send_direct_message(follower.id, message)
-    except
+    except:
       print("sending message failed")
   print('No of people I sent this message to: ', len(followers))
 
@@ -63,7 +58,7 @@ def send_dm(followers, message):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='DM your followers')
   parser.add_argument('limit', type=int, nargs='?', default=10, help='DM criterion limit')
-  parser.add_argument('--forreals', action='store_true')
+  parser.add_argument('--forreals', action='store_true', help='Send DMs forreals')
   args = parser.parse_args()
   api = create_api()
   followers = update_followers_db(api)
@@ -75,3 +70,5 @@ if __name__ == '__main__':
     final_confirmation = input('Y/N --> ')
     if final_confirmation == 'Y':
       send_dm(top, message)
+  else:
+    print('You did a dryrun to send', args.limit, 'people\n', message, '\nUse the flag --forreals to send the message for reals')
