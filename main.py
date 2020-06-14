@@ -18,6 +18,7 @@ import argparse
 # TODO get most relevant followers
 # TODO send at a particular time based on timezone, time 1-24
 # TODO checks to make sure u dont send a dm to the same person in a day thru this
+# TODO Refactor
 
 
 
@@ -103,8 +104,9 @@ and the top 100 users with the most no of followers
     time_in_hours = followers_count / (15 * 200 * 4)
     print("Estimated time for the download to complete based on twitter api rate limits is %f hours" %(time_in_hours))
     followers = update_followers_db(api)
-    print("Preprocessing the downloaded follower data")
+    print("Preprocessing the downloaded follower data, it will take some time too to populate fields like country, timezone, and clusters")
     build_base_json()
+    pass
 
   elif args.dm:
     # apply filters and send dms
@@ -131,6 +133,7 @@ and the top 100 users with the most no of followers
       final_confirmation = input('Y/N --> ')
       if final_confirmation == 'Y':
         send_dm(followers_json, message)
+        pass
     else:
-      print("""You did a dry run to send %d of your followers the following message\n%s\nUse the flag --forreals 
-to send the message for reals""")
+      print("""You did a dry run to send %d of your followers the following message\n%s\n
+Use the flag --forreals to send the message for reals""" %(len(followers_json), message))

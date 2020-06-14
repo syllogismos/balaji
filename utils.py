@@ -1,5 +1,5 @@
 
-import pickle
+import pickle, json
 from config import FOLLOWER_PKL, BASE_JSON
 
 
