@@ -16,10 +16,6 @@ def get_country_from_location(location):
 def build_base_json():
   # TODO figure out a work around for ratelimiting from geocoding while figuring out the country code
   followers = get_followers_local()
-  cols = ['id', 'name', 'screen_name', 
-    'location', 'followers_count',
-    'created_at', 'time_zone',
-    'last_seen', 'country_code']
   json_getter_1 = lambda f, c: f._json[c] if c in f._json else ''
   json_getter_2 = lambda follower, col, attr: f._json[col][attr] if col in f._json else ''
   cols_getter = lambda f: {
