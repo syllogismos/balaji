@@ -53,17 +53,25 @@ def get_top_followers(followers, limit=10, criterion=None):
 
 def send_dm(followers, message):
   for follower in tqdm(followers):
-    api.send_direct_message(follower.id, message)
+    try:
+      api.send_direct_message(follower.id, message)
+    except
+      print("sending message failed")
   print('No of people I sent this message to: ', len(followers))
 
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='DM your followers')
   parser.add_argument('limit', type=int, nargs='?', default=10, help='DM criterion limit')
+  parser.add_argument('--forreals', action='store_true')
   args = parser.parse_args()
   api = create_api()
   followers = update_followers_db(api)
   top = get_top_followers(followers, limit=args.limit)
   message = input('Type your DM Here: ')
   print('This is your DM: ', message)
-  send_dm(top, message)
+  if args.forreals:
+    print("You are sending the message for reals do your want to continue?")
+    final_confirmation = input('Y/N --> ')
+    if final_confirmation == 'Y':
+      send_dm(top, message)
