@@ -11,7 +11,7 @@ FOLLOWER_DIR = "MY_FOLLOWERS.pkl"
 def update_followers_db(api):
   followers = []
   try:
-    for follower in tqdm(get_limit_handled(tweepy.Cursor(api.followers).items())):
+    for follower in tqdm(get_limit_handled(tweepy.Cursor(api.followers, count=200).items())):
       followers.append(follower)
   except:
     print("Exception while traversing through followers cursor")
