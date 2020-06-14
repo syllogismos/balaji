@@ -1,6 +1,6 @@
 import tweepy
 from tqdm import tqdm
-import pickle
+import pickle, time
 from config import create_api
 
 import argparse
