@@ -1,6 +1,6 @@
 from utils import get_followers_local
-from config import BASE_CSV
-import csv
+from config import BASE_CSV, BASE_JSON
+import json
 from geopy.geocoders import Nominatim
 
 def get_country_from_location(location):
@@ -33,9 +33,9 @@ def build_base_csv():
     'last_seen': str(json_getter_2(f, 'status', 'created_at')),
     'country_code': get_country_from_location(json_getter_1(f, 'location'))
   }
-  with open(BASE_CSV, 'w', newline='') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=cols)
-    writer.writeheader()
+  with open(BASE_JSON, 'w') as jsonfile:
     lines = []
     for f in followers:
-      writer.writerow(cols_getter(f))
+      line = cols_getter(f)
+      lines.append(line)
+    json.dump(lines, jsonfile)
