@@ -4,6 +4,7 @@ import pickle, time
 from config import create_api, FOLLOWER_PKL
 from utils import get_followers_local, get_followers_from_json
 from filters import country_code_filter, lastseen_filter, top_n_filter
+from preprocess import build_base_json
 
 import argparse
 
@@ -96,9 +97,14 @@ and the top 100 users with the most no of followers
   api = create_api()
   if args.populate:
     # update db
+    print("Downloading your follower data")
+    me = api.me()
+    followers_count = me.followers_count
+    time_in_hours = followers_count / (15 * 200 * 4)
+    print("Estimated time for the download to complete based on twitter api rate limits is %f hours" %(time_in_hours))
     followers = update_followers_db(api)
-    # do preprocessing here and generate json file
-
+    print("Preprocessing the downloaded follower data")
+    build_base_json()
 
   elif args.dm:
     # apply filters and send dms
