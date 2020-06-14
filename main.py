@@ -59,11 +59,11 @@ def send_dm(followers, message):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='DM your followers')
-  parser.add_argument('limit', type=int, help='A required integer positional argument')
+  parser.add_argument('limit', type=int, nargs='?', default=10, help='DM criterion limit')
   args = parser.parse_args()
   api = create_api()
   followers = update_followers_db(api)
-  top = get_top_followers(followers)
+  top = get_top_followers(followers, limit=args.limit)
   message = input('Type your DM Here: ')
   print('This is your DM: ', message)
   send_dm(top, message)
