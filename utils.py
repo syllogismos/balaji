@@ -1,6 +1,6 @@
 
 import pickle
-from config import FOLLOWER_PKL
+from config import FOLLOWER_PKL, BASE_JSON
 
 
 
@@ -8,8 +8,15 @@ def get_followers_local():
   try:
     followers = pickle.load(open(FOLLOWER_PKL, 'rb'))
   except:
-    print("local db doesn't exist or is corrupted\nupdating the local follower data")
-    followers = update_followers_db(api)
+    print("local db doesn't exist or is corrupted\nuse the --populate flag to populate your local db")
+    followers = []
+  return followers
+
+def get_followers_from_json():
+  try:
+    followers = json.load(open(BASE_JSON, 'rb'))
+  except:
+    followers = []
   return followers
 
 DATETIME_FORMAT = '%a %b %d %H:%M:%S +0000 %Y'

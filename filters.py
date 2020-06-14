@@ -3,10 +3,6 @@ from utils import DATETIME_FORMAT
 import datetime, json
 
 
-def get_followers_from_json():
-  followers = json.load(open(BASE_JSON, 'rb'))
-  return followers
-
 def country_code_filter(followers, code):
   return list(filter(lambda x: x['country_code'] == code, followers))
   
@@ -18,6 +14,10 @@ def is_within_daterange(f, days):
 
 def lastseen_filter(followers, days):
   return list(filter(lambda f: is_within_daterange(f, days), followers))
+
+def top_n_filter(followers, limit=10):
+  followers.sort(key=lambda x: x['followers_count'], reverse=True)
+  return followers[:limit]
   
   
 
