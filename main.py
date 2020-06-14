@@ -6,7 +6,7 @@ from config import create_api
 import argparse
 
 
-follower_directory = "MY_FOLLOWERS.pkl"
+FOLLOWER_DIR = "MY_FOLLOWERS.pkl"
 
 def update_followers_db(api):
   followers = []
@@ -19,13 +19,20 @@ def update_followers_db(api):
 
   print('No of followers downloaded', len(followers))    
   print('updating local followers db')
-  pickle.dump(followers, open(follower_directory, 'wb'))
+  pickle.dump(followers, open(FOLLOWER_DIR, 'wb'))
   return followers
 
-  
+def get_followers_local():
+  try:
+    followers = pickle.load(open(FOLLOWER_DIR, 'rb'))
+  except:
+    print("local db doesn't exist or is corrupted\nupdating the local follower data")
+    followers = update_followers_db(api)
+  return followers
+
 def get_top_followers(followers, limit=10, criterion=None):
   """
-  Get top users with a given criterion, if none, return users with most followers
+  Get top users with a given criterion, if none, return sorted users with most followers
   """
   followers.sort(key=lambda x: x._json['followers_count'], reverse=True)
   return followers[:limit]
@@ -58,10 +65,14 @@ def send_dm(followers, message):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='DM your followers')
   parser.add_argument('limit', type=int, nargs='?', default=10, help='DM criterion limit')
+  parser.add_argument('--update', action="store_true", help="Update follower db locally")
   parser.add_argument('--forreals', action='store_true', help='Send DMs forreals')
   args = parser.parse_args()
   api = create_api()
-  followers = update_followers_db(api)
+  if args.update:
+    followers = update_followers_db(api)
+  if not args.update:
+    followers = get_followers_local()
   top = get_top_followers(followers, limit=args.limit)
   message = input('Type your DM Here: ')
   print('This is your DM: ', message)
@@ -71,4 +82,8 @@ if __name__ == '__main__':
     if final_confirmation == 'Y':
       send_dm(top, message)
   else:
-    print('You did a dryrun to send', args.limit, 'people\n', message, '\nUse the flag --forreals to send the message for reals')
+    print('You did a dryrun to send',
+      args.limit,
+      'people the following message\n',
+      message,
+      '\nUse the flag --forreals to send the message for reals')
