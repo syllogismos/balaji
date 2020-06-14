@@ -1,0 +1,1 @@
+Copy sample_config.py to config.py and add your consumer key, consumer secret, access key, and access secret
