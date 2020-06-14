@@ -1,6 +1,7 @@
 from config import BASE_JSON
 from utils import DATETIME_FORMAT
 import datetime, json
+from clustering import flatten_string
 
 
 def country_code_filter(followers, code):
@@ -19,5 +20,9 @@ def top_n_filter(followers, limit=10):
   followers.sort(key=lambda x: x['followers_count'], reverse=True)
   return followers[:limit]
   
+def token_filter(followers, token):
+  token = flatten_string(token)
+  return list(filter(lambda f: token in f['tokens'], followers))
+
   
 

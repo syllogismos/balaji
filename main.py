@@ -3,7 +3,7 @@ from tqdm import tqdm
 import pickle, time
 from config import create_api, FOLLOWER_PKL
 from utils import get_followers_local, get_followers_from_json
-from filters import country_code_filter, lastseen_filter, top_n_filter
+from filters import country_code_filter, lastseen_filter, top_n_filter, token_filter
 from preprocess import build_base_json
 
 import argparse
@@ -89,6 +89,7 @@ and the top 100 users with the most no of followers
   parser.add_argument('--dm', action="store_true", help="Send DM's, you run this after you update your follower db locally")
   parser.add_argument('--forreals', action="store_true", help="Only when you add forreals flag you will send dms")
   parser.add_argument('--cc', type=str, default="", help="Filter your followers based on country code")
+  parser.add_argument('--token', type=str, default="", help="Filter your followers based on a search token")
   parser.add_argument('--days', type=int, default=0, help="Get followers who are active within the last n number of days")
   parser.add_argument('--limit', type=int, default=10, help="Get the top n followers who have the most no of followers")
   args = parser.parse_args()
@@ -115,6 +116,9 @@ and the top 100 users with the most no of followers
     if args.cc != '':
       followers_json = country_code_filter(followers_json, args.cc)
       print('Total no of followers who are from the country %s are %d' % (args.cc, len(followers_json)))
+    if args.token != '':
+      followers_json = token_filter(followers_json, args.token)
+      print('Total no of followers based on the token %s are %d' %(args.token, len(followers_json)))
     if args.days != 0:
       followers_json = lastseen_filter(followers_json, args.days)
       print('Total no of followers who are last seen within %d days are %d' %(args.days, len(followers_json)))
@@ -122,18 +126,20 @@ and the top 100 users with the most no of followers
     
     print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
     print("No of followers after all the filtering is done is %d" %len(followers_json))
-  
-    message = input('Type your DM Here: ')
-    print('This is your DM: %s' %message)
-
-
-    if args.forreals:
-      # Send DM's for reals.
-      print("You are sending the DM's for reals do you want to continue?")
-      final_confirmation = input('Y/N --> ')
-      if final_confirmation == 'Y':
-        send_dm(followers_json, message)
-        pass
+    if len(followers_json) == 0:
+      print("Your filter resulted in zero followers, modify your filters")
     else:
-      print("""You did a dry run to send %d of your followers the following message\n%s\n
+      message = input('Type your DM Here: ')
+      print('This is your DM: %s' %message)
+
+
+      if args.forreals:
+        # Send DM's for reals.
+        print("You are sending the DM's for reals do you want to continue?")
+        final_confirmation = input('Y/N --> ')
+        if final_confirmation == 'Y':
+          send_dm(followers_json, message)
+          pass
+      else:
+        print("""You did a dry run to send %d of your followers the following message\n%s\n
 Use the flag --forreals to send the message for reals""" %(len(followers_json), message))

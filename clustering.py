@@ -4,7 +4,7 @@ import re
 regex = re.compile('[^a-z0-9\s]')
 
 def flatten_string(string):
-  return regex.sub('', string)
+  return regex.sub('', string.lower())
 
 def get_tokens(f):
   """

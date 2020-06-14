@@ -2,6 +2,7 @@ from utils import get_followers_local
 from config import BASE_CSV, BASE_JSON
 import json
 from geopy.geocoders import Nominatim
+from clustering import get_tokens
 
 def get_country_from_location(location):
   locator = Nominatim(user_agent="targetted twitter DM bot")
@@ -27,7 +28,8 @@ def build_base_json():
     'created_at': str(json_getter_1(f, 'created_at')),
     'time_zone': str(json_getter_1(f, 'time_zone')),
     'last_seen': str(json_getter_2(f, 'status', 'created_at')),
-    'country_code': get_country_from_location(json_getter_1(f, 'location'))
+    'country_code': get_country_from_location(json_getter_1(f, 'location')),
+    'tokens': get_tokens(f)[1]
   }
   with open(BASE_JSON, 'w') as jsonfile:
     lines = []
