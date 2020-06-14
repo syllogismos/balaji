@@ -13,7 +13,7 @@ def get_country_from_location(location):
     country_code = ''
   return country_code
 
-def build_base_csv():
+def build_base_json():
   # TODO figure out a work around for ratelimiting from geocoding while figuring out the country code
   followers = get_followers_local()
   cols = ['id', 'name', 'screen_name', 

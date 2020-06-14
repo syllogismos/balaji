@@ -12,6 +12,8 @@ def get_followers_local():
     followers = update_followers_db(api)
   return followers
 
+DATETIME_FORMAT = '%a %b %d %H:%M:%S +0000 %Y'
+
 
 
 ## Timezone Finder
