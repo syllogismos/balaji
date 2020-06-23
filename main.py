@@ -14,7 +14,8 @@ import argparse
 # DONE figure out filters mechanism
 # DONE last_seen filter, obviously not reliable if you cant/dont update the db regularly
 # DONE country filter
-# TODO clustering followers
+# DONE clustering followers.. umm this is just basic search currently
+# TODO AND/OR token search filters, artificial+intelligence is AND microsoft,apple is OR
 # TODO get most relevant followers
 # TODO send at a particular time based on timezone, time 1-24
 # TODO checks to make sure u dont send a dm to the same person in a day thru this

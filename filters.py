@@ -21,8 +21,20 @@ def top_n_filter(followers, limit=10):
   return followers[:limit]
   
 def token_filter(followers, token):
-  token = flatten_string(token)
-  return list(filter(lambda f: token in f['tokens'], followers))
+  # print(token)
+  if '+' in token and ',' in token:
+    raise Exception
+  if '+' in token or ',' in token:
+    if '+' in token:
+      plustokens = list(map(lambda x: flatten_string(x), token.split('+')))
+      followers = list(filter(lambda f: all(map(lambda x: x in f['tokens'], plustokens)), followers))
+    else:
+      commatokens = list(map(lambda x: flatten_string(x), token.split(',')))
+      followers = list(filter(lambda f: any(map(lambda x: x in f['tokens'], commatokens)), followers))
+  else:
+    token = flatten_string(token)
+    followers = list(filter(lambda f: token in f['tokens'], followers))
+  return followers
 
   
 
