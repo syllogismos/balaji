@@ -1,5 +1,6 @@
 from collections import Counter
 import re
+import time
 
 regex = re.compile('[^a-z0-9\s]')
 
