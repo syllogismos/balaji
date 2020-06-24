@@ -81,7 +81,7 @@ def getESQueryFromFilter(filter):
             return {
                 "range": {"followers_count": {"gte": filter['followerCount'], "lte": filter['followerCount1']}}
             }
-    elif filter['selectedFilter']['value'] == 'friendCound':
+    elif filter['selectedFilter']['value'] == 'friendCount':
         if filter['friendCountCondition']['value'] == 'isGreaterThan':
             return {
                 "range": {"friends_count": {"gte": filter['friendCount']}}
@@ -122,17 +122,24 @@ def getESQueryFromFilters(filters, escher_account_id_str, size):
         raise ParseFilterExcpetion
 
     all_followers_filters = list(
-        filter(lambda x: x['selectedFilter'] == 'allFollowers', filters))
+        filter(lambda x: x['selectedFilter']['value'] == 'allFollowers', filters))
     if len(filters) > 1 and len(all_followers_filters) > 0:
         raise ParseFilterExcpetion
 
     must = [{"term": {"escher_account": escher_account_id_str}}]
 
     source_fields = ["id_str", "name", "screen_name", "location", "description", "url", "followers_count", "friends_count", "created_at",
-                     "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order"]
+                     "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order", "escher_account"]
     query = {
         "_source": source_fields,
-        "size": size
+        "size": size,
+        "sort": [  # to get latest followers on top
+            {
+                "follow_order": {
+                    "order": "desc"
+                }
+            }
+        ]
     }
     if len(all_followers_filters) > 0:
         query["query"] = {"match_all": {}}
@@ -141,7 +148,7 @@ def getESQueryFromFilters(filters, escher_account_id_str, size):
         must_queries = list(map(lambda x: getESQueryFromFilter(x), filters))
         query["query"] = {
             "bool": {
-                "must": must_queries
+                "must": must_queries + must
             }
         }
         return query
