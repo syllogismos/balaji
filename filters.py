@@ -1,8 +1,8 @@
-from config import BASE_JSON
-from utils import DATETIME_FORMAT
+from .config import BASE_JSON
+from .utils import DATETIME_FORMAT
 import datetime
 import json
-from clustering import flatten_string
+from .clustering import flatten_string
 
 
 class ParseFilterExcpetion(Exception):

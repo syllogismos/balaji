@@ -1,7 +1,7 @@
 
 import pickle
 import json
-from config import FOLLOWER_PKL, BASE_JSON
+from .config import FOLLOWER_PKL, BASE_JSON
 import datetime
 
 
@@ -28,9 +28,12 @@ DATETIME_FORMAT = '%a %b %d %H:%M:%S +0000 %Y'
 def python_date(x): return datetime.datetime.strptime(x, DATETIME_FORMAT)
 
 
-def get_bulk_commands(me, follower, index):
+def get_upsert_commands(me, follower_tup, index):
+    follower, follow_order = follower_tup
     _id = me.id_str + "a" + follower.id_str
     js = follower._json
+    js['escher_account'] = me.id_str
+    js['follow_order'] = follow_order
     js['created_at'] = python_date(js['created_at'])
     if 'status' in js:
         js['status']['created_at'] = python_date(js['status']['created_at'])
@@ -38,6 +41,12 @@ def get_bulk_commands(me, follower, index):
                                                         'doc_as_upsert': True}]
 
 
+def get_bulk_commands(me, followers, index):
+    bulk_commands = []
+    for follower in followers:
+        b = get_upsert_commands(me, follower, index)
+        bulk_commands.extend(b)
+    return bulk_commands
 # Timezone Finder
 # import datetime
 # import pytz

@@ -2,10 +2,10 @@ import tweepy
 from tqdm import tqdm
 import pickle
 import time
-from config import create_api, FOLLOWER_PKL, es
-from utils import get_followers_local, get_followers_from_json
-from filters import country_code_filter, lastseen_filter, top_n_filter, token_filter
-from preprocess import build_base_json
+from .config import create_api, FOLLOWER_PKL, es
+from .utils import get_followers_local, get_followers_from_json
+from .filters import country_code_filter, lastseen_filter, top_n_filter, token_filter
+from .preprocess import build_base_json
 
 import argparse
 
