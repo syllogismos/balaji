@@ -1,4 +1,4 @@
-from .config import BASE_JSON
+from .config import BASE_JSON, es
 from .utils import DATETIME_FORMAT
 import datetime
 import json
@@ -55,28 +55,97 @@ filterInitialState = {
 }
 
 
-def getUsersFromFilter(filter):
-    if filter['selectedFilter'] == '':
-        raise ParseFilterExcpetion
-    if filter['selectedFilter']['value'] == 'allFollowers':
-        pass
-    elif filter['selectedFilter']['value'] == 'twitterHandle':
-        pass
+def getESQueryFromFilter(filter):
+
+    # if filter['selectedFilter'] == '':
+    #     raise ParseFilterExcpetion
+    # if filter['selectedFilter']['value'] == 'allFollowers':
+    #     # query["query"] = {
+    #     #     "match_all": {}
+    #     # }
+    #     pass
+    if filter['selectedFilter']['value'] == 'twitterHandle':
+        return {
+            "term": {"screen_name": filter['twitterHandle']}
+        }
     elif filter['selectedFilter']['value'] == 'followerCount':
-        pass
+        if filter['followerCountCondition']['value'] == 'isGreaterThan':
+            return {
+                "range": {"followers_count": {"gte": filter['followerCount']}}
+            }
+        elif filter['followerCountCondition']['value'] == 'isLessThan':
+            return {
+                "range": {"followers_count": {"lte": filter['followerCount']}}
+            }
+        else:
+            return {
+                "range": {"followers_count": {"gte": filter['followerCount'], "lte": filter['followerCount1']}}
+            }
     elif filter['selectedFilter']['value'] == 'friendCound':
-        pass
+        if filter['friendCountCondition']['value'] == 'isGreaterThan':
+            return {
+                "range": {"friends_count": {"gte": filter['friendCount']}}
+            }
+        elif filter['friendCountCondition']['value'] == 'isLessThan':
+            return {
+                "range": {"friends_count": {"lte": filter['friendCount']}}
+            }
+        else:
+            return {
+                "range": {"friends_count": {"gte": filter['friendCount'], "lte": filter['friendCount1']}}
+            }
     elif filter['selectedFilter']['value'] == 'topics':
         pass
     elif filter['selectedFilter']['value'] == 'lastSeen':
-        pass
+        if filter['lastSeenCondition']['value'] == 'isGreaterThan':
+            return {
+                "range": {"status.created_at": {"gte": filter['startDate']}}
+            }
+        elif filter['lastSeenCondition']['value'] == 'isLessThan':
+            return {
+                "range": {"status.created_at": {"lte": filter['startDate']}}
+            }
+        else:
+            return {
+                "range": {"status.created_at": {"gte": filter['startDate'], "lte": filter['endDate']}}
+            }
     elif filter['selectedFilter']['value'] == 'country':
         pass
     else:
         raise ParseFilterExcpetion
 
 
-def getUsersFromFilters(filters):
+def getESQueryFromFilters(filters, escher_account_id_str, size):
+
+    empty_filters = list(filter(lambda x: x['selectedFilter'] == '', filters))
+    if len(empty_filters) > 0:
+        raise ParseFilterExcpetion
+
+    all_followers_filters = list(
+        filter(lambda x: x['selectedFilter'] == 'allFollowers', filters))
+    if len(filters) > 1 and len(all_followers_filters) > 0:
+        raise ParseFilterExcpetion
+
+    must = [{"term": {"escher_account": escher_account_id_str}}]
+
+    source_fields = ["id_str", "name", "screen_name", "location", "description", "url", "followers_count", "friends_count", "created_at",
+                     "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order"]
+    query = {
+        "_source": source_fields,
+        "size": size
+    }
+    if len(all_followers_filters) > 0:
+        query["query"] = {"match_all": {}}
+        return query
+    else:
+        must_queries = list(map(lambda x: getESQueryFromFilter(x), filters))
+        query["query"] = {
+            "bool": {
+                "must": must_queries
+            }
+        }
+        return query
+    pass
 
 
 def country_code_filter(followers, code):
