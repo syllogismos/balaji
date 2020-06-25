@@ -95,7 +95,25 @@ def getESQueryFromFilter(filter):
                 "range": {"friends_count": {"gte": filter['friendCount'], "lte": filter['friendCount1']}}
             }
     elif filter['selectedFilter']['value'] == 'topics':
-        pass
+        topics = filter['topics']
+        if filter['topicsCondition']['value'] == 'or':
+            return {
+                "query_string": {
+                    "fields": [
+                        "description",
+                        "status.text"
+                    ],
+                    "query": ' OR '.join(map(str, topics))
+                }}
+        else:
+            return {
+                "query_string": {
+                    "fields": [
+                        "description",
+                        "status.text"
+                    ],
+                    "query": ' AND '.join(map(str, topics))
+                }}
     elif filter['selectedFilter']['value'] == 'lastSeen':
         if filter['lastSeenCondition']['value'] == 'isGreaterThan':
             return {
