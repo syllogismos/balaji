@@ -21,7 +21,7 @@ def get_limit_handled(cursor):
             return
 
 
-@dramatiq.actor(max_retries=3, time_limit=7 * 24 * 60 * 60 * 1000)
+@dramatiq.actor(max_retries=3, queue_name="index_followers" time_limit=7 * 24 * 60 * 60 * 1000)
 def index_users(keys):
     # time limit for the worker process to run is 7 days for now
     api = create_api_from_creds(

@@ -145,7 +145,11 @@ def getESQueryFromFilter(filter):
         raise ParseFilterExcpetion
 
 
-def getESQueryFromFilters(filters, escher_account_id_str, size):
+default_source_fields = ["id_str", "name", "screen_name", "location", "description", "url", "followers_count", "friends_count", "created_at",
+                         "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order", "escher_account"]
+
+
+def getESQueryFromFilters(filters, escher_account_id_str, size, source_fields=default_source_fields):
 
     empty_filters = list(filter(lambda x: x['selectedFilter'] == '', filters))
     if len(empty_filters) > 0:
@@ -158,8 +162,8 @@ def getESQueryFromFilters(filters, escher_account_id_str, size):
 
     must = [{"term": {"escher_account": escher_account_id_str}}]
 
-    source_fields = ["id_str", "name", "screen_name", "location", "description", "url", "followers_count", "friends_count", "created_at",
-                     "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order", "escher_account"]
+    # source_fields = ["id_str", "name", "screen_name", "location", "description", "url", "followers_count", "friends_count", "created_at",
+    #                  "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order", "escher_account"]
     query = {
         "_source": source_fields,
         "size": size,
