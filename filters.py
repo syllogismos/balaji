@@ -128,7 +128,19 @@ def getESQueryFromFilter(filter):
                 "range": {"status.created_at": {"gte": filter['startDate'], "lte": filter['endDate']}}
             }
     elif filter['selectedFilter']['value'] == 'country':
+        return {
+            "term": {"country": filter['selectedCountry']['value']}
+        }
         pass
+    elif filter['selectedFilter']['value'] == 'flag':
+        if filter['flagCondition']['value'] == 'is':
+            return {
+                "term": {filter['flagOption']['value']: True}
+            }
+        else:
+            return {
+                "term": {filter['flagOption']['value']: False}
+            }
     else:
         raise ParseFilterExcpetion
 
