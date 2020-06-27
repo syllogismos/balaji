@@ -1,4 +1,4 @@
-from .config import create_api_from_creds, es
+from .config import create_api_from_creds, es, rabbitmq_broker
 from tqdm import tqdm
 from .utils import get_bulk_commands
 import dramatiq
@@ -6,7 +6,7 @@ from dramatiq.brokers.rabbitmq import RabbitmqBroker
 import tweepy
 
 # rabbitmq_broker = RabbitmqBroker()
-# dramatiq.set_broker(rabbitmq_broker)
+dramatiq.set_broker(rabbitmq_broker)
 
 index_name = "followers"
 
@@ -24,6 +24,7 @@ def get_limit_handled(cursor):
 @dramatiq.actor(max_retries=1, queue_name="index_followers", time_limit=7 * 24 * 60 * 60 * 1000)
 def index_users(keys):
     # time limit for the worker process to run is 7 days for now
+    # dramatiq balaji.indexusers --queues index_followers
     api = create_api_from_creds(
         keys['api_key'], keys['api_secret'], keys['access_token'], keys['access_token_secret'])
     me = api.me()
