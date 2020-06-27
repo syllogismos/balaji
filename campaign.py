@@ -1,14 +1,12 @@
-from .config import create_api_from_creds, es
+from .config import create_api_from_creds
 
 from balaji.filters import getESQueryFromFilters
 import datetime
 
 import dramatiq
-from dramatiq.brokers.rabbitmq import RabbitmqBroker
 import tweepy
-from backend.settings import db, get_user
+from backend.settings import db, get_user, es, rabbitmq_broker
 
-rabbitmq_broker = RabbitmqBroker()
 dramatiq.set_broker(rabbitmq_broker)
 
 db_index = 'dms'

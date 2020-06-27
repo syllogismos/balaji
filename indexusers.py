@@ -1,9 +1,10 @@
-from .config import create_api_from_creds, es, rabbitmq_broker
+from .config import create_api_from_creds
 from tqdm import tqdm
 from .utils import get_bulk_commands
 import dramatiq
 from dramatiq.brokers.rabbitmq import RabbitmqBroker
 import tweepy
+from backend.settings import es, rabbitmq_broker
 
 # rabbitmq_broker = RabbitmqBroker()
 dramatiq.set_broker(rabbitmq_broker)

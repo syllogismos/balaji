@@ -1,4 +1,5 @@
-from .config import BASE_JSON, es
+from .config import BASE_JSON
+from backend.settings import es
 from .utils import DATETIME_FORMAT
 import datetime
 import json
