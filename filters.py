@@ -147,7 +147,7 @@ def getESQueryFromFilter(filter):
 
 
 default_source_fields = ["id_str", "name", "screen_name", "location", "description", "url", "followers_count", "friends_count", "created_at",
-                         "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order", "escher_account"]
+                         "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url_https", "muting", "blocking", "follow_order", "escher_account"]
 
 
 def getESQueryFromFilters(filters, escher_account_id_str, size, source_fields=default_source_fields):
