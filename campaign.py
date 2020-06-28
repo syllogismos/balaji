@@ -1,4 +1,4 @@
-from .config import create_api_user_access_tokens
+from .utils import create_api_user_access_tokens
 
 from balaji.filters import getESQueryFromFilters
 import datetime

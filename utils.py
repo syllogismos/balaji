@@ -1,8 +1,9 @@
 
 import pickle
 import json
-from .config import FOLLOWER_PKL, BASE_JSON
+from .config import FOLLOWER_PKL, BASE_JSON, my_keys
 import datetime
+import tweepy
 
 
 def get_followers_local():
@@ -47,6 +48,17 @@ def get_bulk_commands(me, followers, index):
         b = get_upsert_commands(me, follower, index)
         bulk_commands.extend(b)
     return bulk_commands
+
+
+def create_api_user_access_tokens(userDetails):
+    auth = tweepy.OAuthHandler(my_keys['api_key'], my_keys['api_secret'])
+    if 'twitterUser' in userDetails:
+        credential = userDetails['twitterUser']['credential']
+        auth.set_access_token(
+            credential['oauthAccessToken'], credential['oauthTokenSecret'])
+    api = tweepy.API(auth)
+    return api
+
 # Timezone Finder
 # import datetime
 # import pytz

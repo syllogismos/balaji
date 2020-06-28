@@ -1,4 +1,4 @@
-from .config import create_api_user_access_tokens
+from .utils import create_api_user_access_tokens
 from tqdm import tqdm
 from .utils import get_bulk_commands
 import dramatiq
