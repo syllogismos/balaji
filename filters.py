@@ -177,7 +177,7 @@ def getESQueryFromFilters(filters, escher_account_id_str, size, source_fields=de
         ]
     }
     if len(all_followers_filters) > 0:
-        query["query"] = {"match_all": {}}
+        query["query"] = {"bool": {"must": must}}
         return query
     else:
         must_queries = list(map(lambda x: getESQueryFromFilter(x), filters))

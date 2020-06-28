@@ -1,4 +1,4 @@
-from .config import create_api_from_creds
+from .config import create_api_user_access_tokens
 
 from balaji.filters import getESQueryFromFilters
 import datetime
@@ -27,8 +27,7 @@ def run_campaign(campaign_id):
     campaign = db.collection('campaigns').document(campaign_id).get().to_dict()
     uid = campaign["uid"]
     user_details = db.collection('userdetails').document(uid).get().to_dict()
-    api = create_api_from_creds(user_details['api_key'], user_details['api_secret'],
-                                user_details['access_token'], user_details['access_token_secret'])
+    api = create_api_user_access_tokens(user_details)
     escher_user = api.me()
     filters = campaign['data']['filters']['filters']
     es_query = getESQueryFromFilters(

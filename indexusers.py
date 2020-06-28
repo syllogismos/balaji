@@ -1,4 +1,4 @@
-from .config import create_api_from_creds
+from .config import create_api_user_access_tokens
 from tqdm import tqdm
 from .utils import get_bulk_commands
 import dramatiq
@@ -30,11 +30,7 @@ def index_users(uid):
     if 'index_status' in user_details and user_details['index_status'] == 'indexing':
         return
     try:
-        api = create_api_from_creds(
-            user_details['api_key'],
-            user_details['api_secret'],
-            user_details['access_token'],
-            user_details['access_token_secret'])
+        api = create_api_user_access_tokens(user_details)
         me = api.me()
         db.collection(u'userdetails').document(uid).set(
             {'index_status': 'indexing'}, merge=True)
