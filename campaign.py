@@ -5,7 +5,8 @@ import datetime
 
 import dramatiq
 import tweepy
-from backend.settings import db, get_user, es, rabbitmq_broker
+from backend.settings import db, get_user, es, rabbitmq_broker, dashboard
+import urllib
 
 dramatiq.set_broker(rabbitmq_broker)
 
@@ -35,13 +36,36 @@ def run_campaign(campaign_id):
     es_response = es.search(index="fol*", body=es_query)
     es_ids = set(map(lambda x: x['_source']
                      ['id_str'], es_response['hits']['hits']))
-    dm = campaign['data']['dm']
+
+    # dm = campaign['data']['dm']
     print(es_ids)
     for id_str in es_ids:
         try:
+            dm = get_custom_dm(campaign, id_str, campaign_id)
             api.send_direct_message(id_str, dm)
             es.index('dms', body={'dm': dm, 'escher_account': escher_user.id_str,
                                   'id_str': id_str, 'campaign': campaign_id, 't': datetime.datetime.now()})
         except Exception as e:
             print(e)
             print(campaign_id, 'sending dm to', id_str, 'failed')
+
+
+def get_custom_dm(campaign, id_str, campaign_id):
+    if campaign['data']['linkCheck']:
+        # c: campaign
+        # i: id_str
+        # u: url
+        if campaign['data']['selectedDropdown'] == 'Subscribe':
+            url = campaign['data']['url'] + '?' + \
+                urllib.parse.urlencode({'c': campaign_id, 'i': id_str})
+        else:
+            url = campaign['data']['url']
+        query_params = {'c': campaign_id,
+                        'i': id_str, 'u': url}
+        query_string = urllib.parse.urlencode(query_params)
+        tracking_url = dashboard + 'click?' + query_string
+        dm = campaign['data']['text'] + ' ' + tracking_url
+    else:
+        dm = campaign['data']['text']
+
+    return dm
