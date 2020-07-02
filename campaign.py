@@ -7,6 +7,8 @@ import dramatiq
 import tweepy
 from backend.settings import db, get_user, es, rabbitmq_broker, dashboard
 import urllib
+from balaji.config import FIREBASE_API_KEY, FIREBASE_DOMAIN_LINKS_DOMAIN, FIREBASE_DOMAIN_LINKS_TIMEOUT
+from balaji.utils import DynamicLinks
 
 dramatiq.set_broker(rabbitmq_broker)
 
@@ -50,6 +52,10 @@ def run_campaign(campaign_id):
             print(campaign_id, 'sending dm to', id_str, 'failed')
 
 
+dynamicLinks = DynamicLinks(
+    FIREBASE_API_KEY, FIREBASE_DOMAIN_LINKS_DOMAIN, FIREBASE_DOMAIN_LINKS_TIMEOUT)
+
+
 def get_custom_dm(campaign, id_str, campaign_id):
     if campaign['data']['linkCheck']:
         # c: campaign
@@ -64,7 +70,9 @@ def get_custom_dm(campaign, id_str, campaign_id):
                         'i': id_str, 'u': url}
         query_string = urllib.parse.urlencode(query_params)
         tracking_url = dashboard + 'click?' + query_string
-        dm = campaign['data']['text'] + ' ' + tracking_url
+        dynamic_link = dynamicLinks.generate_dynamic_link(tracking_url, True)
+
+        dm = campaign['data']['text'] + ' ' + dynamic_link
     else:
         dm = campaign['data']['text']
 
