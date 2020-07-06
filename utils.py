@@ -51,6 +51,43 @@ def get_bulk_commands(me, followers, index):
     return bulk_commands
 
 
+def get_upsert_commands_user_deets(me, follower_tup, index):
+    _id = me.id_str + "a" + follower.id_str
+    js = follower._json
+    js['escher_account'] = me.id_str
+    js['created_at'] = python_date(js['created_at'])
+    if 'status' in js:
+        js['status']['created_at'] = python_date(js['status']['created_at'])
+    return [{'update': {'_index': index, '_id': _id}}, {'doc': js,
+                                                        'doc_as_upsert': True}]
+
+
+def get_bulk_commands_user_deets(me, followers, index):
+    bulk_commands = []
+    for follower in followers:
+        b = get_upsert_commands(me, follower, index)
+        bulk_commands.extend(b)
+    return bulk_commands
+
+
+def get_upsert_commands_follower_id(me, follower_id_tup, index):
+    follow_id, follow_order = follower_id_tup
+    _id = me.id_str + 'a' + str(follow_id)
+    js = {}
+    js['escher_account'] = me.id_str
+    js['follow_order'] = follow_order
+    js['id_str'] = str(follow_id)
+    return [{'update': {'_index': index, '_id': _id}}, {'doc': js, 'doc_as_upsert': True}]
+
+
+def get_bulk_commands_follower_ids(me, ids, index):
+    bulk_commands = []
+    for follower_id in ids:
+        b = get_upsert_commands_follower_id(me, follower_id, index)
+        bulk_commands.extend(b)
+    return bulk_commands
+
+
 def create_api_user_access_tokens(userDetails):
     auth = tweepy.OAuthHandler(my_keys['api_key'], my_keys['api_secret'])
     if 'twitterUser' in userDetails:
