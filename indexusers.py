@@ -15,8 +15,8 @@ dramatiq.set_broker(rabbitmq_broker)
 index_name = "followers"
 fast_index_name = "followers_fast"
 
-TWEEPY_ID_LIMIT = 50
-TWEEPY_USER_DEETS_LIMIT = 3
+TWEEPY_ID_LIMIT = 5000
+TWEEPY_USER_DEETS_LIMIT = 100
 
 
 def get_limit_handled(cursor):
