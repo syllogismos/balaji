@@ -51,7 +51,7 @@ def get_bulk_commands(me, followers, index):
     return bulk_commands
 
 
-def get_upsert_commands_user_deets(me, follower_tup, index):
+def get_upsert_commands_user_deets(me, follower, index):
     _id = me.id_str + "a" + follower.id_str
     js = follower._json
     js['escher_account'] = me.id_str
@@ -65,7 +65,7 @@ def get_upsert_commands_user_deets(me, follower_tup, index):
 def get_bulk_commands_user_deets(me, followers, index):
     bulk_commands = []
     for follower in followers:
-        b = get_upsert_commands(me, follower, index)
+        b = get_upsert_commands_user_deets(me, follower, index)
         bulk_commands.extend(b)
     return bulk_commands
 

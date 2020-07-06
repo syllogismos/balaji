@@ -70,7 +70,7 @@ def index_users_fast(uid):
     # time limit for the worker process to run is 1 day
     # dramatiq balaji.indexusers --queues index_followers_fast
     user_details = db.collection('userdetails').document(uid).get().to_dict()
-    if 'index_status' in user_details and user_details['index_status'] == 'indexing':
+    if 'index_status' in user_details and 'indexing' in user_details['index_status']:
         return
     try:
         api = create_api_user_access_tokens(user_details)
@@ -94,7 +94,7 @@ def index_users_fast(uid):
             me, follower_ids, fast_index_name)
         es.bulk(body=bulk_commands)
         db.collection('userdetails').document(uid).set(
-            {'index_status': 'ids_finished'}, merge=True)
+            {'index_status': 'indexing_users_deets'}, merge=True)
 
         # QUERY FOR FOLLOWER IDS FROM ES AND GET FOLLOWER DEETS FROM TWITTER
         scan_query = {'_source': ['escher_account', 'id_str'],
@@ -107,8 +107,8 @@ def index_users_fast(uid):
             if len(follower_ids_from_es) == TWEEPY_USER_DEETS_LIMIT:
                 while True:
                     try:
-                        followers.append(
-                            api.lookup_users(follower_ids_from_es))
+                        followers.extend(list(
+                            api.lookup_users(follower_ids_from_es)))
                         follower_ids_from_es = []
                         break
                     except tweepy.RateLimitError:
@@ -125,7 +125,8 @@ def index_users_fast(uid):
         if len(follower_ids_from_es) > 0:
             while True:
                 try:
-                    followers.append(api.lookup_users(follower_ids_from_es))
+                    followers.extend(
+                        list(api.lookup_users(follower_ids_from_es)))
                     break
                 except tweepy.RateLimitError:
                     print("Tweepy lookup users ratelimit")
@@ -138,6 +139,6 @@ def index_users_fast(uid):
             {'index_status': 'finished'}, merge=True)
     except Exception as e:
         print("Exception while fast indexing from twitter api")
-        traceback.print_exception(e)
+        traceback.print_exc()
         db.collection(u'userdetails').document(uid).set(
             {'index_status': 'failed'}, merge=True)
