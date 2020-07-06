@@ -13,7 +13,7 @@ from elasticsearch.helpers import scan
 dramatiq.set_broker(rabbitmq_broker)
 
 index_name = "followers"
-fast_index_name = "followers_fast"
+fast_index_name = "followers"
 
 TWEEPY_ID_LIMIT = 5000
 TWEEPY_USER_DEETS_LIMIT = 100
