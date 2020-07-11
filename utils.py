@@ -5,6 +5,8 @@ from .config import FOLLOWER_PKL, BASE_JSON, my_keys
 import datetime
 import tweepy
 import requests
+import traceback
+from backend.settings import ses_email_client
 
 
 def get_followers_local():
@@ -96,6 +98,37 @@ def create_api_user_access_tokens(userDetails):
             credential['oauthAccessToken'], credential['oauthTokenSecret'])
     api = tweepy.API(auth)
     return api
+
+
+def send_email_alert(subject, body):
+    try:
+        response = ses_email_client.send_email(
+            Source='anil@eschernode.com',
+            Destination={
+                'ToAddresses': [
+                    'anil@eschernode.com',
+                ],
+            },
+            Message={
+                'Subject': {
+                    'Data': subject,
+                    'Charset': 'UTF-8'
+                },
+                'Body': {
+                    'Text': {
+                        'Data': body,
+                        'Charset': 'UTF-8'
+                    }
+                }
+            },
+            ReplyToAddresses=[
+                'anil@eschernode.com',
+            ]
+        )
+        print(response)
+    except Exception as e:
+        print("Exception while sending sparkpost email")
+        traceback.print_exc()
 
 
 class DynamicLinks:
