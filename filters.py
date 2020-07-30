@@ -177,13 +177,31 @@ def getESQueryFromFilters(filters, escher_account_id_str, size, source_fields=de
         ]
     }
     if len(all_followers_filters) > 0:
-        query["query"] = {"bool": {"must": must}}
+        # must will have the escher_account and must_not will only return users
+        # that have the profile data in them
+        query["query"] = {
+            "bool": {
+                "must": must,
+                "must_not": {
+                    "exists": {
+                        "field": "profile_image_url_https"
+                    }
+                }
+            }
+        }
         return query
     else:
         must_queries = list(map(lambda x: getESQueryFromFilter(x), filters))
+        # must will have all the filters, and must_not will make sure
+        # users without data will not be returned
         query["query"] = {
             "bool": {
-                "must": must_queries + must
+                "must": must_queries + must,
+                "must_not": {
+                    "exists": {
+                        "field": "profile_image_url_https"
+                    }
+                }
             }
         }
         return query
