@@ -161,7 +161,8 @@ def getESQueryFromFilters(filters, escher_account_id_str, size, source_fields=de
     if len(filters) > 1 and len(all_followers_filters) > 0:
         raise ParseFilterExcpetion
 
-    must = [{"term": {"escher_account": escher_account_id_str}}]
+    must = [{"term": {"escher_account": escher_account_id_str}},
+            {"exists": {"field": "profile_image_url_https"}}]
 
     # source_fields = ["id_str", "name", "screen_name", "location", "description", "url", "followers_count", "friends_count", "created_at",
     #                  "verified", "statuses_count", "favourites_count", "status.created_at", "profile_image_url", "muting", "blocking", "follow_order", "escher_account"]
@@ -181,12 +182,7 @@ def getESQueryFromFilters(filters, escher_account_id_str, size, source_fields=de
         # that have the profile data in them
         query["query"] = {
             "bool": {
-                "must": must,
-                "must_not": {
-                    "exists": {
-                        "field": "profile_image_url_https"
-                    }
-                }
+                "must": must
             }
         }
         return query
@@ -196,12 +192,7 @@ def getESQueryFromFilters(filters, escher_account_id_str, size, source_fields=de
         # users without data will not be returned
         query["query"] = {
             "bool": {
-                "must": must_queries + must,
-                "must_not": {
-                    "exists": {
-                        "field": "profile_image_url_https"
-                    }
-                }
+                "must": must_queries + must
             }
         }
         return query
